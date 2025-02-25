@@ -39,7 +39,7 @@ const Horarios = () => {
         
     ]
   return (
-    <div className="pr-5 pl-5 lg:pr-10 lg:pl-10 py-5 ">
+    <div className="pr-5 pl-5 lg:pr-10 lg:pl-10 py-5 " id="horarios">
         <h1 className="text-center text-5xl lg:text-7xl mb-20 font-bold text-indigo-500">
             Horarios
         </h1>

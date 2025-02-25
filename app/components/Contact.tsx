@@ -1,6 +1,6 @@
 const Contact = () => {
     return (
-      <div className="relative pl-5 pr-5 lg:pl-10 lg:pr-10 overflow-hidden">
+      <div className="relative pl-5 pr-5 lg:pl-10 lg:pr-10 overflow-hidden py-2" id="contactanos">
         {/* Efecto de destello en el fondo */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-transparent blur-3xl opacity-50 pointer-events-none"></div>
   

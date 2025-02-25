@@ -2,7 +2,7 @@
 
 const Services = () => {
   return (
-    <div className="pr-5 pl-5 lg:pr-10 lg:pl-10">
+    <div className="pr-5 pl-5 lg:pr-10 lg:pl-10" id="servicios">
         <div className="py-24 sm:py-32">
             <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
             <p className="mx-auto mt-2 max-w-lg text-center text-4xl text-indigo-500 font-semibold tracking-tight text-balance sm:text-5xl">
@@ -40,7 +40,7 @@ const Services = () => {
                             </ul>
                         </div>
                         <div className="mt-10 mb-10 w-full">
-                            <a href="" className="p-2 rounded-md bg-pink-400 text-white">
+                            <a href="" className="p-2 rounded-md bg-pink-400 text-white transition-all hover:bg-pink-500">
                                 Inscribete
                             </a>
                         </div>

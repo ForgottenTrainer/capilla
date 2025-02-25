@@ -1,7 +1,7 @@
 
 const About = () => {
   return (
-    <div className="pl-5 pr-5 lg:pl-10 lg:pr-10">
+    <div className="pl-5 pr-5 lg:pl-10 lg:pr-10" id="about">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 py-20">
             <div className="flex flex-col justify-center items-center text-center lg:items-start lg:text-left">
