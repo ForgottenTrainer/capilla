@@ -1,48 +1,61 @@
+"use client"; // Necesario para usar useEffect en Next.js
+
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { useRouter } from "next/navigation";
 import { Navbar } from "./Navbar";
-import { useNavigate } from "@remix-run/react";
-
+import Image from "next/image";
+import Divino from "./../../public/divino.png";
+import cloud from "./../../public/cloud.png";
 
 export const Header = () => {
-  const cloudsRef = useRef(null);
-  const navigate = useNavigate();
+  const cloudsRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const handleClick = () => {
-    navigate("/blog"); // Cambia "/ruta-destino" por la URL a la que quieres redirigir
+    router.push("/Blog");
   };
-
-
+  
   useEffect(() => {
-    gsap.to(cloudsRef.current, {
-      x: "-50%", // Mueve las nubes a la izquierda
-      duration: 60, // Tiempo de animación (más lento para efecto suave)
-      repeat: -1, // Animación infinita
-      ease: "linear", // Movimiento constante
-    });
+    if (cloudsRef.current) {
+      // Inicializar la posición
+      gsap.set(cloudsRef.current, { x: '0%' });
+      
+      // Animar la nube
+      gsap.to(cloudsRef.current, {
+        x: '-50%', // Mover hacia la izquierda un 50%
+        duration: 60, // Duración larga para movimiento suave
+        repeat: -1, // Repetir infinitamente
+        ease: "linear", // Velocidad constante
+        repeatDelay: 0
+      });
+    }
   }, []);
-
   return (
-    <div className="relative bg-gradient-to-r from-pink-100 to-blue-100 min-h-screen z[-10] overflow-hidden">
-      <div className="relative z-[10]">
+    <div className="relative bg-gradient-to-r from-pink-100 to-blue-100 min-h-screen overflow-hidden">
+      {/* Navbar con z-index alto para evitar ser tapado */}
+      <div className="relative z-20">
         <Navbar />
       </div>
 
-      {/* Fondo de Nubes con GSAP */}
-      <div className="absolute top-0 left-0 w-[200%] h-full opacity-50">
-        <img
-          ref={cloudsRef}
-          src="/cloud.png" 
-          alt="Nubes"
-          className="w-full h-full object-cover"
-        />
+      {/* Nubes en movimiento */}
+    
+      <div className="absolute top-0 left-0 w-[200%] h-full opacity-50 overflow-hidden">
+        <div ref={cloudsRef} className="w-full h-full relative">
+          <Image
+            src="/cloud.png"
+            alt="Nubes"
+            className="w-full h-full object-cover"
+            fill
+            priority
+          />
+        </div>
       </div>
-
-      {/* Contenido Principal */}
+          {/* Contenido Principal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 items-center min-h-screen px-6 lg:px-20 relative z-10">
         {/* Sección de Texto */}
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-          <p className="text-lg gap-2 flex font-semibold mb-4 text-slate-800 mt-5 lg:mt-0">
+          <p className="text-lg flex items-center gap-2 font-semibold mb-4 text-slate-800 mt-5 lg:mt-0">
             <span className="text-indigo-500">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -61,8 +74,8 @@ export const Header = () => {
             </span>{" "}
             Cristo te está esperando
           </p>
-          <h1 className="text-6xl lg:text-8xl text-center font-bold mb-6">
-            Capilla Divino Niño
+          <h1 className="text-6xl lg:text-8xl font-bold mb-6">
+            Capilla Divino Niño PDC
           </h1>
           <p className="text-gray-700 text-center text-lg font-semibold mb-8">
             Un lugar de Fe y Esperanza en Honor al Divino Niño
@@ -76,7 +89,10 @@ export const Header = () => {
                 Eventos
               </div>
             </button>
-            <a href="#horarios" className="px-8 py-3 w-full bg-white/40 text-sm text-center rounded-md font-semibold hover:shadow-lg">
+            <a
+              href="#horarios"
+              className="px-8 py-3 w-full bg-white/40 text-sm text-center rounded-md font-semibold hover:shadow-lg"
+            >
               Horarios
             </a>
           </div>
@@ -84,12 +100,12 @@ export const Header = () => {
 
         {/* Imagen Centrada */}
         <div className="flex justify-center mt-10">
-          <img className="max-w-xs lg:max-w-md" src="/divino.png" alt="Divino Niño" />
+          <Image className="max-w-xs lg:max-w-md" src={Divino} alt="Divino Niño" />
         </div>
       </div>
 
       {/* Gradiente en la parte inferior */}
-      <div className="inset-x-0 bottom-0 h-60 bg-gradient-to-t from-white via-white to-transparent"></div>
+      <div className="absolute inset-x-0 bottom-0 h-60 bg-gradient-to-t from-white via-white to-transparent"></div>
     </div>
   );
 };

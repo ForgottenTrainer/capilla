@@ -20,7 +20,7 @@ const About = () => {
             </div>
             <div className="">
                 <div className="rounded-md mt-5 p-3 border border-slate-200 bg-slate-100">
-                    <img src="./capilla.jpg" className="rounded-md lg:h-[30em] lg:w-[70em]" alt="Capilla" />
+                    <img src="./capilla.jpg" className="rounded-md shadow-md lg:h-[30em] lg:w-[70em]" alt="Capilla" />
                 </div>
             </div>
         </div>

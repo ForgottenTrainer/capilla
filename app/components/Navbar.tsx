@@ -19,22 +19,22 @@ export const Navbar = () => {
                     </a>
                 </li>
                 <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                    <a href="#horarios" className="flex items-center">
+                    <a href="/#horarios" className="flex items-center">
                     Horarios
                     </a>
                 </li>
                 <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                    <a href="#about" className="flex items-center">
+                    <a href="/#about" className="flex items-center">
                     Acerca de nosotros
                     </a>
                 </li>
                 <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                    <a href="#servicios" className="flex items-center">
+                    <a href="/#servicios" className="flex items-center">
                         Servicios
                     </a>
                 </li>
                 <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                    <a href="#contactanos" className="flex items-center">
+                    <a href="/#contactanos" className="flex items-center">
                         Contactanos
                     </a>
                 </li>
@@ -43,7 +43,7 @@ export const Navbar = () => {
             <div className="flex items-center gap-x-1">
                 
                 <a
-                href="/blog"
+                href="/Blog"
                 className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-4 rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] hidden lg:inline-block"
                 type="button"
                 >
