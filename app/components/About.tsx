@@ -1,3 +1,4 @@
+import Link from "next/link"
 
 const About = () => {
   return (
@@ -11,12 +12,12 @@ const About = () => {
                 <p className="text-lg text-slate-800 font-normal py-5 w-full max-w-[40em]">
                     En la Capilla Divino Niño, creemos en el amor, la fe y la esperanza como pilares fundamentales para acercarnos a Dios. Nuestra comunidad está dedicada a ofrecer un espacio de paz y reflexión para todos aquellos que buscan fortalecer su relación con Cristo.
                 </p>
-                <a
-                    href=""
+                <Link
+                    href="/#contactanos"
                     className="p-3 bg-pink-400 rounded-md text-white shadow-sm transition-all hover:bg-pink-500"
                 >
                     Únete al apostolado
-                </a>
+                </Link>
             </div>
             <div className="">
                 <div className="rounded-md mt-5 p-3 border border-slate-200 bg-slate-100">

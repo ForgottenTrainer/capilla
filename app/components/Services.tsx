@@ -1,3 +1,4 @@
+import Link from "next/link"
 
 
 const Services = () => {
@@ -40,9 +41,9 @@ const Services = () => {
                             </ul>
                         </div>
                         <div className="mt-10 mb-10 w-full">
-                            <a href="" className="p-2 rounded-md bg-pink-400 text-white transition-all hover:bg-pink-500">
+                            <Link href="/#contactanos" className="p-2 rounded-md bg-pink-400 text-white transition-all hover:bg-pink-500">
                                 Inscribete
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
