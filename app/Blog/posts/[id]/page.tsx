@@ -1,9 +1,8 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "@/app/components/Navbar";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 // 📌 Tipo de Post
@@ -21,94 +20,174 @@ async function fetchPost(id: string): Promise<Post | null> {
     const response = await fetch(`http://127.0.0.1:8000/api/posts/${id}`, {
       cache: "no-store",
     });
-
     if (!response.ok) return null;
     return response.json();
-  } catch (error) {
-    console.error("Error obteniendo post:", error);
+  } catch (err) {
+    console.error("Error obteniendo post:", err);
     return null;
   }
 }
 
-// 📌 Formatear Fecha
-function formatDate(dateString: string) {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  };
-  return new Date(dateString).toLocaleDateString("es-ES", options);
+// 📌 Actualizar post
+async function updatePost(id: string, postData: Partial<Post>): Promise<boolean> {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/posts/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(postData),
+    });
+    
+    return response.ok;
+  } catch (err) {
+    console.error("Error actualizando post:", err);
+    return false;
+  }
 }
 
-export default function PostPage() {
+export default function UpdatePostPage() {
   const { id } = useParams(); // Obtener ID dinámico
   const router = useRouter();
-  const [post, setPost] = useState<Post | null>(null);
+  const [formData, setFormData] = useState<Partial<Post>>({
+    titulo: "",
+    subtitulo: "",
+    mensaje: "",
+  });
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // 📌 Cargar datos en Cliente
   useEffect(() => {
     if (!id) return;
+    
     async function getData() {
-      const fetchedPost = await fetchPost(id as string);
-      if (!fetchedPost) {
-        router.push("/404"); // Redirigir si no encuentra el post
-      } else {
-        setPost(fetchedPost);
+      try {
+        const fetchedPost = await fetchPost(id as string);
+        if (!fetchedPost) {
+          router.push("/404"); // Redirigir si no encuentra el post
+        } else {
+          setFormData({
+            titulo: fetchedPost.titulo,
+            subtitulo: fetchedPost.subtitulo || "",
+            mensaje: fetchedPost.mensaje,
+          });
+        }
         setLoading(false);
+      } catch {
+        setLoading(false);
+        setErrorMessage("Error al cargar el post");
       }
     }
+    
     getData();
   }, [id, router]);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setErrorMessage(null);
+    
+    try {
+      const success = await updatePost(id as string, formData);
+      
+      if (success) {
+        router.push(`/Blog/${id}`);
+      } else {
+        setErrorMessage("Error al actualizar el post");
+      }
+    } catch {
+      setErrorMessage("Error al procesar la solicitud");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) return <p className="text-center text-lg text-gray-500">Cargando post...</p>;
-  if (!post) return <p className="text-center text-lg text-red-500">No se encontró el post</p>;
-
-  // 📌 Calcular Tiempo de Lectura
-  const wordCount = post.mensaje.split(/\s+/).length;
-  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-
-  // 📌 Formatear párrafos
-  const formattedContent = post.mensaje.split("\n").map((paragraph, index) => (
-    <p key={index} className="mb-4 text-gray-800 leading-relaxed">{paragraph}</p>
-  ));
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         {/* Botón de regreso */}
-        <Link href="/Blog" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-6 transition duration-200">
+        <Link href={`/Blog/${id}`} className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-6 transition duration-200">
           <ArrowLeft size={18} className="mr-2" />
-          Volver a todos los posts
+          Volver al post
         </Link>
-
-        <article className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
-          {/* Encabezado del artículo */}
-          <div className="p-8 border-b border-gray-100">
-            <h1 className="text-4xl font-bold text-indigo-600 mb-3">{post.titulo}</h1>
-            {post.subtitulo && <h2 className="text-xl text-gray-600 font-medium mb-6">{post.subtitulo}</h2>}
-
-            {/* Metadatos */}
-            <div className="flex flex-wrap items-center text-sm text-gray-500 gap-4 mt-6">
-              <div className="flex items-center">
-                <Calendar size={16} className="mr-2" />
-                {formatDate(post.created_at)}
-              </div>
-              <div className="flex items-center">
-                <Clock size={16} className="mr-2" />
-                {readingTime} min de lectura
-              </div>
-            </div>
-          </div>
-
-          {/* Contenido */}
+        
+        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
           <div className="p-8">
-            <div className="prose max-w-none">{formattedContent}</div>
+            <h1 className="text-3xl font-bold text-indigo-600 mb-6">Actualizar Post</h1>
+            
+            {errorMessage && (
+              <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {errorMessage}
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label htmlFor="titulo" className="block text-gray-700 font-medium mb-2">
+                  Título
+                </label>
+                <input
+                  type="text"
+                  id="titulo"
+                  name="titulo"
+                  value={formData.titulo}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label htmlFor="subtitulo" className="block text-gray-700 font-medium mb-2">
+                  Subtítulo (opcional)
+                </label>
+                <input
+                  type="text"
+                  id="subtitulo"
+                  name="subtitulo"
+                  value={formData.subtitulo}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="mensaje" className="block text-gray-700 font-medium mb-2">
+                  Contenido
+                </label>
+                <textarea
+                  id="mensaje"
+                  name="mensaje"
+                  value={formData.mensaje}
+                  onChange={handleChange}
+                  rows={10}
+                  className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700 transition duration-200 disabled:opacity-50"
+                  disabled={submitting}
+                >
+                  {submitting ? "Guardando..." : "Guardar cambios"}
+                </button>
+              </div>
+            </form>
           </div>
-        </article>
+        </div>
       </main>
     </div>
   );

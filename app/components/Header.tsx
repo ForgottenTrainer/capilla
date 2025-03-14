@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "./Navbar";
 import Image from "next/image";
 import Divino from "./../../public/divino.png";
-import cloud from "./../../public/cloud.png";
+
 
 export const Header = () => {
   const cloudsRef = useRef<HTMLDivElement>(null);
@@ -48,6 +48,8 @@ export const Header = () => {
             className="w-full h-full object-cover"
             fill
             priority
+
+            
           />
         </div>
       </div>

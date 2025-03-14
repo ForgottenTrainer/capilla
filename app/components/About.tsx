@@ -1,4 +1,6 @@
+import Image from "next/image"
 import Link from "next/link"
+import capilla from "./../../public/capilla.jpg"
 
 const About = () => {
   return (
@@ -21,7 +23,7 @@ const About = () => {
             </div>
             <div className="">
                 <div className="rounded-md mt-5 p-3 border border-slate-200 bg-slate-100">
-                    <img src="./capilla.jpg" className="rounded-md shadow-md lg:h-[30em] lg:w-[70em]" alt="Capilla" />
+                    <Image src={capilla} className="rounded-md shadow-md lg:h-[30em] lg:w-[70em]" alt="Capilla"  width={1000} height={1000} />
                 </div>
             </div>
         </div>

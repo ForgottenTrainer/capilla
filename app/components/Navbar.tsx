@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -74,44 +76,45 @@ export const Navbar = () => {
   return (
     <>
       <div className="flex px-5 bg-white/40 shadow-sm items-center justify-between text-blue-gray-900">
-        <a
+        <Link
           href="/"
           className="block antialiased font-sans text-base leading-relaxed text-inherit mr-4 cursor-pointer py-1.5 font-medium"
         >
-          <img
+          <Image
             className="w-[5em] mx-auto h-auto object-contain"
             src="/logo.png"
             alt="Divino Niño"
+            width={1000} height={1000}
           />
-        </a>
+        </Link>
         <div className="flex items-center gap-4">
           {/* Menú para pantallas grandes */}
           <div className="mr-4 hidden lg:block">
             <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
               <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                <a href="/" className="flex items-center">
+                <Link href="/" className="flex items-center">
                   Inicio
-                </a>
+                </Link>
               </li>
               <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                <a href="/#horarios" className="flex items-center">
+                <Link href="/#horarios" className="flex items-center">
                   Horarios
-                </a>
+                </Link>
               </li>
               <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                <a href="/#about" className="flex items-center">
+                <Link href="/#about" className="flex items-center">
                   Acerca de nosotros
-                </a>
+                </Link>
               </li>
               <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                <a href="/#servicios" className="flex items-center">
+                <Link href="/#servicios" className="flex items-center">
                   Servicios
-                </a>
+                </Link>
               </li>
               <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-                <a href="/#contactanos" className="flex items-center">
+                <Link href="/#contactanos" className="flex items-center">
                   Contactanos
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -134,12 +137,12 @@ export const Navbar = () => {
 
               </>
             )}
-            <a
+            <Link
               href="/Blog"
               className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-4 rounded-lg bg-gradient-to-tr from-indigo-600 to-pink-500 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] hidden lg:inline-block"
             >
               <span>Blog</span>
-            </a>
+            </Link>
           </div>
           {/* Botón hamburguesa para móviles */}
           <button
@@ -174,29 +177,29 @@ export const Navbar = () => {
       >
         <ul className="mt-2 mb-4 flex flex-col gap-2 p-4">
           <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-            <a href="/" className="flex items-center">
+            <Link href="/" className="flex items-center">
               Inicio
-            </a>
+            </Link>
           </li>
           <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-            <a href="/#horarios" className="flex items-center">
+            <Link href="/#horarios" className="flex items-center">
               Horarios
-            </a>
+            </Link>
           </li>
           <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-            <a href="/#about" className="flex items-center">
+            <Link href="/#about" className="flex items-center">
               Acerca de nosotros
-            </a>
+            </Link>
           </li>
           <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-            <a href="/#servicios" className="flex items-center">
+            <Link href="/#servicios" className="flex items-center">
               Servicios
-            </a>
+            </Link>
           </li>
           <li className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 p-1 font-normal">
-            <a href="/#contactanos" className="flex items-center">
+            <Link href="/#contactanos" className="flex items-center">
               Contactanos
-            </a>
+            </Link>
           </li>
         </ul>
         <div className="flex flex-col items-center gap-2 p-4">
@@ -217,12 +220,12 @@ export const Navbar = () => {
               
             </>
           )}
-          <a
+          <Link
             href="/Blog"
             className="w-full align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-4 rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85]"
           >
             <span>Blog</span>
-          </a>
+          </Link>
         </div>
       </div>
     </>

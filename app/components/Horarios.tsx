@@ -1,3 +1,4 @@
+import Image from "next/image"
 
 
 const Horarios = () => {
@@ -46,7 +47,7 @@ const Horarios = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-5 gap-4 mx-auto">
             {horarios.map((misa, index) => (
             <div key={index} className="max-w-sm rounded-lg overflow-hidden shadow-lg  bg-white">
-                <img className="w-full h-56 object-cover" src={misa.imagen} alt={misa.dia} />
+                <Image className="w-full h-56 object-cover" src={misa.imagen} alt={misa.dia} width={1000} height={1000}/>
                 <div className="px-6 py-4">
                 <h2 className="font-bold text-2xl text-gray-800 mb-2">{misa.evento}</h2>
                 <p className="text-xl text-gray-800 mb-2 font-semibold">{misa.dia}</p>

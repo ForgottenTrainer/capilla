@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Capilla Divino Niño PDC",
   description: "Capilla Divino Niño PDC un lugar de conexion con cristo.",
+  icons: {
+    icon: './../public.divino.png', 
+  },
 };
 
 export default function RootLayout({

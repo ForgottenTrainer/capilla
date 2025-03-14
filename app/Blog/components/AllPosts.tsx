@@ -1,4 +1,5 @@
 import { Navbar } from "@/app/components/Navbar";
+import Image from "next/image";
 import Link from "next/link";
 
 // Si `Post` no está definido en otro lugar, agrégalo aquí
@@ -47,7 +48,7 @@ type Post = {
                     : post.mensaje}
                 </p>
                 {post.imagen && (
-                  <img
+                  <Image
                     src={post.imagen}
                     alt={post.titulo}
                     className="my-4 w-full max-h-96 object-cover rounded-md"
