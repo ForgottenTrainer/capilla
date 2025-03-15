@@ -16,8 +16,9 @@ export const metadata: Metadata = {
   title: "Capilla Divino Niño PDC",
   description: "Capilla Divino Niño PDC un lugar de conexion con cristo.",
   icons: {
-    icon: './../public.divino.png', 
-  },
+    icon:['/favicon.ico?=v4'],
+    apple:['/']
+  }
 };
 
 export default function RootLayout({
