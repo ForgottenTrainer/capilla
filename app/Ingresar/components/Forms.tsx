@@ -1,190 +1,135 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { ArrowBigLeft } from "lucide-react";
-import Link from "next/link";
-import Swal from "sweetalert2";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export const Forms = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const [networkError, setNetworkError] = useState<string>("");
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const url = process.env.NEXT_PUBLIC_DATABASE_URL;
   const router = useRouter();
 
-  const baseUrl = process.env.NEXT_PUBLIC_DATABASE_URL;
-  if (!baseUrl) {
-    console.error("La variable de entorno NEXT_PUBLIC_DATABASE_URL no está definida");
-  }
+  useEffect(() => {
+    // Verificar si el usuario ya está autenticado al cargar la página
+    const token = localStorage.getItem('token');
+    if (token) {
+      validateSession(token);
+    }
+  }, []);
 
-  // Mostrar notificación de sesión expirada y redirigir
-  const showSessionExpired = useCallback(() => {
-    Swal.fire({
-      title: "Sesión expirada",
-      text: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
-      icon: "warning",
-      confirmButtonText: "Ir al login",
-      timer: 3000,
-      showConfirmButton: true,
-    }).then(() => {
-      router.push("/login");
-    });
-  }, [router]);
-
-  // Manejo del formulario de login
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setNetworkError("");
+    setError('');
+    setLoading(true);
 
     try {
-      // Aquí concatenamos "/api/login" al baseUrl
-      const response = await fetch(`${baseUrl}/api/login`, {
-        method: "POST",
+      const response = await fetch(`${url}/api/login`, {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-        credentials: "include",
+        body: JSON.stringify({ email, password })
       });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error("Credenciales incorrectas");
-        } else if (response.status === 419) {
-          throw new Error("Sesión expirada o CSRF inválido. Por favor, intenta de nuevo.");
-        } else {
-          throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`);
-        }
-      }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token);
 
-      Swal.fire({
-        icon: "success",
-        title: "Inicio de sesión exitoso",
-        text: "¡Bienvenido de nuevo!",
-      });
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al iniciar sesión');
+      }
 
-      setEmail("");
-      setPassword("");
-      
-      router.push("/Blog/create");
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "No se pudo iniciar sesión";
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: errorMessage,
-      });
+      // Guardar token en localStorage
+      localStorage.setItem('token', data.token);
+
+      // Validar sesión para evitar redirecciones innecesarias
+      validateSession(data.token);
+
+      // Redireccionar después del login exitoso
+      router.push('/Blog/create');
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Obtener CSRF cookie (este endpoint puede no necesitar el prefijo "/api")
-  useEffect(() => {
-    fetch(`${baseUrl}/api/sanctum/csrf-cookie`, {
-      method: "GET",
-      credentials: "include",
-    }).catch((error) => {
-      console.error("Error al obtener CSRF cookie:", error);
-      setNetworkError("No se pudo conectar con el servidor.");
-    });
-  }, [baseUrl]);
-
-  // Verificar token de usuario y redirigir si ya está autenticado
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      // Aquí concatenamos "/api/user" al baseUrl
-      fetch(`${baseUrl}/api/user`, {
-        method: "GET",
+  const validateSession = async (token: string) => {
+    try {
+      const response = await fetch(`${url}/api/user`, {
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-      })
-        .then((response) => {
-          if (!response.ok) {
-            if (response.status === 401 || response.status === 419) {
-              localStorage.removeItem("token");
-              showSessionExpired();
-              return;
-            }
-            throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
-          }
-          return response.json();
-        })
-        .then(() => {
-          router.push("/Blog/create");
-        })
-        .catch((err) => {
-          console.error("Error al validar token:", err);
-          setNetworkError("No se pudo conectar con el servidor.");
-        });
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Sesión expirada o usuario no autenticado');
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+      console.log('Usuario autenticado:', userData);
+    } catch (err: any) {
+      console.error('Error de sesión:', err.message);
+      setError('Tu sesión ha expirado. Inicia sesión nuevamente.');
+      localStorage.removeItem('token');
     }
-  }, [router, showSessionExpired, baseUrl]);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Ingresar</h2>
-        <form onSubmit={handleLogin} className="space-y-4">
-          {networkError && <p className="text-red-500 text-center">{networkError}</p>}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+        <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">Iniciar Sesión</h1>
+
+        {error && (
+          <div className="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Correo Electrónico
+            </label>
             <input
+              id="email"
               type="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
             <input
+              id="password"
               type="password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span className="ml-2 text-sm text-gray-600">Recuérdame</span>
-            </label>
-          </div>
-          <div className="flex items-center justify-between">
-            <Link href="/" className="p-2 flex gap-2 rounded-md text-pink-400 transition-all">
-              <ArrowBigLeft /> Regresar
-            </Link>
-          </div>
+
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+            disabled={loading}
+            className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300"
           >
-            Ingresar
+            {loading ? 'Cargando...' : 'Iniciar Sesión'}
           </button>
         </form>
       </div>
     </div>
   );
-};
-
-export default Forms;
+}
