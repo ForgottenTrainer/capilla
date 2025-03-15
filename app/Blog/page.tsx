@@ -1,12 +1,18 @@
 import AllPosts from "./components/AllPosts";
 
 async function getPosts() {
-  const response = await fetch("http://127.0.0.1:8000/api/posts", {
-    cache: "no-store", // Evita que Next.js almacene en caché los datos
+  const url = process.env.NEXT_PUBLIC_DATABASE_URL;
+
+  if (!url) {
+    throw new Error("La URL de la API no está definida en .env.local");
+  }
+
+  const response = await fetch(`${url}/api/posts`, {
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error("Error al obtener los posts");
+    throw new Error(`Error al obtener los posts: ${response.statusText}`);
   }
 
   return response.json();

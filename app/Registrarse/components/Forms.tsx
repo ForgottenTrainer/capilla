@@ -27,7 +27,7 @@ export const Forms = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/register", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATABASE_URL}/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

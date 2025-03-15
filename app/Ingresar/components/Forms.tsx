@@ -13,7 +13,12 @@ export const Forms = () => {
   const [networkError, setNetworkError] = useState<string>("");
   const router = useRouter();
 
-  // 📌 Mostrar notificación de sesión expirada y redirigir
+  const baseUrl = process.env.NEXT_PUBLIC_DATABASE_URL;
+  if (!baseUrl) {
+    console.error("La variable de entorno NEXT_PUBLIC_DATABASE_URL no está definida");
+  }
+
+  // Mostrar notificación de sesión expirada y redirigir
   const showSessionExpired = useCallback(() => {
     Swal.fire({
       title: "Sesión expirada",
@@ -27,13 +32,14 @@ export const Forms = () => {
     });
   }, [router]);
 
-  // 📌 Manejo del formulario de login
+  // Manejo del formulario de login
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setNetworkError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
+      // Aquí concatenamos "/api/login" al baseUrl
+      const response = await fetch(`${baseUrl}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +73,7 @@ export const Forms = () => {
 
       setEmail("");
       setPassword("");
-      setRememberMe(false);
+      
       router.push("/Blog/create");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "No se pudo iniciar sesión";
@@ -79,17 +85,23 @@ export const Forms = () => {
     }
   };
 
+  // Obtener CSRF cookie (este endpoint puede no necesitar el prefijo "/api")
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
+    fetch(`${baseUrl}/api/sanctum/csrf-cookie`, {
       method: "GET",
       credentials: "include",
+    }).catch((error) => {
+      console.error("Error al obtener CSRF cookie:", error);
+      setNetworkError("No se pudo conectar con el servidor.");
     });
-  }, []);
+  }, [baseUrl]);
 
+  // Verificar token de usuario y redirigir si ya está autenticado
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetch("http://127.0.0.1:8000/api/user", {
+      // Aquí concatenamos "/api/user" al baseUrl
+      fetch(`${baseUrl}/api/user`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +129,7 @@ export const Forms = () => {
           setNetworkError("No se pudo conectar con el servidor.");
         });
     }
-  }, [router, showSessionExpired]);
+  }, [router, showSessionExpired, baseUrl]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -127,15 +139,34 @@ export const Forms = () => {
           {networkError && <p className="text-red-500 text-center">{networkError}</p>}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Correo</label>
-            <input type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input
+              type="email"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-            <input type="password" className="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+              type="password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
           <div className="flex items-center justify-between">
             <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
+              <input
+                type="checkbox"
+                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
               <span className="ml-2 text-sm text-gray-600">Recuérdame</span>
             </label>
           </div>
@@ -144,7 +175,12 @@ export const Forms = () => {
               <ArrowBigLeft /> Regresar
             </Link>
           </div>
-          <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors">Ingresar</button>
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+          >
+            Ingresar
+          </button>
         </form>
       </div>
     </div>
