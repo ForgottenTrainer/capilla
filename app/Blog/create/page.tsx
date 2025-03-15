@@ -1,12 +1,13 @@
 "use client";
 /* eslint-disable */
 
-
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/components/Navbar";
 import Swal from "sweetalert2";
 import Link from "next/link";
+
+const url = process.env.NEXT_PUBLIC_DATABASE_URL;
 
 type Post = {
   id: number;
@@ -19,12 +20,12 @@ export default function CreatePost() {
   const [titulo, setTitulo] = useState("");
   const [subtitulo, setSubtitulo] = useState("");
   const [mensaje, setMensaje] = useState("");
-  //const [imagen, setImagen] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // Mostrar alerta cuando la sesión expira
   const showSessionExpired = useCallback(() => {
     Swal.fire({
       title: "Sesión expirada",
@@ -34,10 +35,12 @@ export default function CreatePost() {
       timer: 3000,
       showConfirmButton: true,
     }).then(() => {
+      localStorage.removeItem("token");
       router.push("/Blog");
     });
   }, [router]);
 
+  // Verificar autenticación al cargar la página
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -45,7 +48,7 @@ export default function CreatePost() {
       return;
     }
 
-    fetch("http://127.0.0.1:8000/api/user", {
+    fetch(`${url}/api/user`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -54,17 +57,88 @@ export default function CreatePost() {
       },
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Token inválido");
-        }
+        if (!response.ok) throw new Error("Token inválido");
         return response.json();
       })
-      .catch(() => {
-        localStorage.removeItem("token");
-        showSessionExpired();
-      });
+      .catch(() => showSessionExpired());
   }, [showSessionExpired]);
 
+  // Función para obtener los posts
+  const fetchPosts = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${url}/api/posts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          showSessionExpired();
+          return;
+        }
+        throw new Error("Error al cargar los posts");
+      }
+
+      const data = await response.json();
+      setPosts(data);
+    } catch {
+      setError("No se pudieron cargar los posts.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  // Función para crear un nuevo post
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showSessionExpired();
+      return;
+    }
+
+    try {
+      const response = await fetch(`${url}/api/posts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ titulo, subtitulo, mensaje }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          showSessionExpired();
+          return;
+        }
+        throw new Error("Error al crear el post");
+      }
+
+      Swal.fire("Éxito", "El post ha sido creado correctamente.", "success");
+
+      // Limpiar el formulario y recargar la lista
+      setTitulo("");
+      setSubtitulo("");
+      setMensaje("");
+      fetchPosts();
+    } catch {
+      Swal.fire("Error", "No se pudo crear el post.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para eliminar un post
   const handleDelete = async (id: number) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -84,62 +158,29 @@ export default function CreatePost() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/api/posts/${id}`, {
+          const response = await fetch(`${url}/api/posts/${id}`, {
             method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           });
 
           if (!response.ok) {
             if (response.status === 401) {
-              localStorage.removeItem("token");
               showSessionExpired();
               return;
             }
             throw new Error("Error al eliminar el post");
           }
 
-          setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
-
           Swal.fire("Eliminado", "El post ha sido eliminado.", "success");
-        } catch (error) {
+
+          // Actualizar la lista de posts
+          setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+        } catch {
           Swal.fire("Error", "No se pudo eliminar el post.", "error");
         }
       }
     });
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/posts", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          if (response.status === 401) {
-            localStorage.removeItem("token");
-            showSessionExpired();
-            return;
-          }
-          throw new Error("Error al cargar los posts");
-        }
-        const data = await response.json();
-        setPosts(data);
-      } catch {
-        setError("No se pudieron cargar los posts.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, [showSessionExpired]);
 
   return (
     <>

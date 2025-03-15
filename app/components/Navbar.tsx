@@ -10,13 +10,14 @@ export const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>("");
   const router = useRouter();
+  const url = process.env.NEXT_PUBLIC_DATABASE_URL
 
   // 📌 Verificar autenticación y obtener el nombre del usuario
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       // Hacer solicitud a un endpoint protegido para obtener los datos del usuario
-      fetch("http://127.0.0.1:8000/api/user", {
+      fetch(`${url}/api/user`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +56,7 @@ export const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        await fetch("http://127.0.0.1:8000/api/logout", {
+        await fetch(`${url}/api/logout`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -72,6 +73,8 @@ export const Navbar = () => {
     setUserName("");
     router.push("/Blog");
   };
+
+  
 
   return (
     <>
