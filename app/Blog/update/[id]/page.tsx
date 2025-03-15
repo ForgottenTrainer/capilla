@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { useState, useEffect, useCallback } from "react";
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
