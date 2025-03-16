@@ -1,69 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import Swal from "sweetalert2";
+
 
 const Contact = () => {
-  const [correo, setCorreo] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [asunto, setAsunto] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [networkError, setNetworkError] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setNetworkError("");
-  
-    try {
-      // 🔹 Obtener el token CSRF antes de enviar el formulario
-      await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
-        method: "GET",
-        credentials: "include",
-      });
-  
-      // 🔹 Enviar los datos del formulario
-      const response = await fetch("http://127.0.0.1:8000/api/correo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify({
-          correo,
-          telefono,
-          asunto,
-          mensaje,
-        }),
-        credentials: "include",
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error en la solicitud");
-      }
-  
-      Swal.fire({
-        icon: "success",
-        title: "Correo enviado",
-        text: "Pronto recibirás tu respuesta",
-      });
-  
-      setCorreo("");
-      setTelefono("");
-      setAsunto("");
-      setMensaje("");
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Error desconocido";
-      console.error("Error en la solicitud:", err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: errorMessage,
-      });
-    }
-  };
   
   return (
     <div className="relative pl-5 pr-5 lg:pl-10 lg:pr-10 overflow-hidden py-2" id="contactanos">
