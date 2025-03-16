@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowBigLeft } from "lucide-react";
 import Swal from "sweetalert2";
@@ -12,6 +12,7 @@ export const Forms = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const router = useRouter();
+  const url = process.env.NEXT_PUBLIC_DATABASE_URL;
 
   // 📌 Manejo del formulario con tipado explícito
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -68,6 +69,41 @@ export const Forms = () => {
       });
     }
   };
+    const showSessionExpired = useCallback(() => {
+      Swal.fire({
+        title: "Sesión expirada",
+        text: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+        icon: "warning",
+        confirmButtonText: "Ir al login",
+        timer: 3000,
+        showConfirmButton: true,
+      }).then(() => {
+        localStorage.removeItem("token");
+        router.push("/Blog");
+      });
+    }, [router]);
+
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        showSessionExpired();
+        return;
+      }
+  
+      fetch(`${url}/api/user`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error("Token inválido");
+          return response.json();
+        })
+        .catch(() => showSessionExpired());
+    }, [showSessionExpired]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
