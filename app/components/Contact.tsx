@@ -77,41 +77,47 @@ const Contact = () => {
         <div className="bg-white shadow-lg rounded-xl p-8 border border-blue-200 relative overflow-hidden">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-indigo-500">Contáctanos</h2>
           <p className="mb-8 lg:mb-16 font-light text-center text-gray-500 sm:text-xl">
-            Envíanos un mensaje dejando tu correo y número de teléfono.
+            Buscanos en la capilla.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {networkError && <p className="text-red-500 text-center">{networkError}</p>}
-            <div>
-              <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Correo Electrónico</label>
-              <input type="email" id="email" value={correo} onChange={(e) => setCorreo(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-400 focus:border-blue-400 block w-full p-2.5" placeholder="hola@gmail.com" required />
+          <div className="">
+            {/* 
+            <div className="p-1 flex gap-4 bg-indigo-100 rounded-md border border-indigo-300 justify-center items-center">
+              <span className="bg-indigo-500 rounded-md p-1 text-white">
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M3.00977 5.83789C3.00977 5.28561 3.45748 4.83789 4.00977 4.83789H20C20.5523 4.83789 21 5.28561 21 5.83789V17.1621C21 18.2667 20.1046 19.1621 19 19.1621H5C3.89543 19.1621 3 18.2667 3 17.1621V6.16211C3 6.11449 3.00333 6.06765 3.00977 6.0218V5.83789ZM5 8.06165V17.1621H19V8.06199L14.1215 12.9405C12.9499 14.1121 11.0504 14.1121 9.87885 12.9405L5 8.06165ZM6.57232 6.80554H17.428L12.7073 11.5263C12.3168 11.9168 11.6836 11.9168 11.2931 11.5263L6.57232 6.80554Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+              <p className="text-pink-600">yadi.nutri90@gmail.com</p>
             </div>
-
-            <div>
-              <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900">Número de Teléfono</label>
-              <input type="tel" id="phone" value={telefono} onChange={(e) => setTelefono(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-400 focus:border-blue-400 block w-full p-2.5" placeholder="9xx-xxx-xxxx" required />
+            */}
+            <br />
+            <div className="p-2 bg-indigo-100 rounded-md border border-indigo-300 justify-center items-center w-full">
+              <h5 className="text-center text-2xl lg:text-4xl font-bold text-pink-500">Ubicación</h5>
+                <div className="flex justify-center items-center py-5">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3733.052677359889!2d-87.05992685029622!3d20.66743577669119!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f4e5d53d27991f5%3A0xcd207815fe15f01a!2sCapilla%20Divino%20Ni%C3%B1o%20Jes%C3%BAs!5e0!3m2!1ses!2smx!4v1742075694133!5m2!1ses!2smx"
+                    width="600"
+                    height="400"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
             </div>
-
-            <div>
-              <label htmlFor="subject" className="block mb-2 text-sm font-medium text-gray-900">Asunto</label>
-              <input type="text" id="subject" value={asunto} onChange={(e) => setAsunto(e.target.value)} className="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-400 focus:border-blue-400" placeholder="Déjanos saber en qué te podemos ayudar" required />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900">Mensaje</label>
-              <textarea id="message" rows={6} value={mensaje} onChange={(e) => setMensaje(e.target.value)} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:ring-blue-400 focus:border-blue-400" placeholder="Dejar Mensaje" required />
-            </div>
-
-            <div className="flex justify-start">
-              <button type="submit" className="relative flex items-start gap-2 py-3 px-5 bg-blue-500 transition-all hover:bg-blue-600 text-white text-sm font-medium rounded-lg shadow-lg focus:ring-4 focus:outline-none focus:ring-blue-300">
-                <span className="absolute -inset-0.5 bg-blue-300 opacity-20 blur-md"></span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-                </svg>
-                Enviar Mensaje
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
       <br />
